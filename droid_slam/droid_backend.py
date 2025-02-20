@@ -11,15 +11,16 @@ class DroidBackend:
         self.video = video
         self.update_op = net.update
 
-        # global optimization window
+        # 全局优化窗口
         self.t0 = 0
         self.t1 = 0
 
-        self.upsample = args.upsample
-        self.beta = args.beta
-        self.backend_thresh = args.backend_thresh
-        self.backend_radius = args.backend_radius
-        self.backend_nms = args.backend_nms
+        # 参数初始化
+        self.upsample = args.upsample  # 是否进行上采样
+        self.beta = args.beta  # 优化中的超参数 beta
+        self.backend_thresh = args.backend_thresh  # 后端处理的阈值
+        self.backend_radius = args.backend_radius  # 后端处理的半径
+        self.backend_nms = args.backend_nms  # 后端处理的非极大值抑制参数
         
     @torch.no_grad()
     def __call__(self, steps=12):

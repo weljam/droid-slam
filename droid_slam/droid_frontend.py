@@ -8,29 +8,29 @@ from factor_graph import FactorGraph
 
 class DroidFrontend:
     def __init__(self, net, video, args):
-        self.video = video
-        self.update_op = net.update
-        self.graph = FactorGraph(video, net.update, max_factors=48, upsample=args.upsample)
+        self.video = video  # 视频数据
+        self.update_op = net.update  # 更新操作
+        self.graph = FactorGraph(video, net.update, max_factors=48, upsample=args.upsample)  # 因子图
 
-        # local optimization window
-        self.t0 = 0
-        self.t1 = 0
+        # 局部优化窗口
+        self.t0 = 0  # 起始时间
+        self.t1 = 0  # 当前时间
 
-        # frontent variables
-        self.is_initialized = False
-        self.count = 0
+        # 前端变量
+        self.is_initialized = False  # 是否初始化
+        self.count = 0  # 计数器
 
-        self.max_age = 25
-        self.iters1 = 4
-        self.iters2 = 2
+        self.max_age = 25  # 最大年龄
+        self.iters1 = 4  # 第一次迭代次数
+        self.iters2 = 2  # 第二次迭代次数
 
-        self.warmup = args.warmup
-        self.beta = args.beta
-        self.frontend_nms = args.frontend_nms
-        self.keyframe_thresh = args.keyframe_thresh
-        self.frontend_window = args.frontend_window
-        self.frontend_thresh = args.frontend_thresh
-        self.frontend_radius = args.frontend_radius
+        self.warmup = args.warmup  # 预热时间
+        self.beta = args.beta  # beta参数
+        self.frontend_nms = args.frontend_nms  # 前端非极大值抑制
+        self.keyframe_thresh = args.keyframe_thresh  # 关键帧阈值
+        self.frontend_window = args.frontend_window  # 前端窗口大小
+        self.frontend_thresh = args.frontend_thresh  # 前端阈值
+        self.frontend_radius = args.frontend_radius  # 前端半径
 
     def __update(self):
         """ add edges, perform update """

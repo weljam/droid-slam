@@ -11,35 +11,47 @@ import geom.projective_ops as pops
 
 class DepthVideo:
     def __init__(self, image_size=[480, 640], buffer=1024, stereo=False, device="cuda:0"):
-                
-        # current keyframe count
+        # 初始化 DepthVideo 类并设置参数
+
+        # 当前关键帧计数
         self.counter = Value('i', 0)
         self.ready = Value('i', 0)
         self.ht = ht = image_size[0]
         self.wd = wd = image_size[1]
 
-        ### state attributes ###
+        ### 状态属性 ###
+        # 每帧的时间戳
         self.tstamp = torch.zeros(buffer, device="cuda", dtype=torch.float).share_memory_()
+        # 每帧的图像
         self.images = torch.zeros(buffer, 3, ht, wd, device="cuda", dtype=torch.uint8)
+        # 每帧的脏标志
         self.dirty = torch.zeros(buffer, device="cuda", dtype=torch.bool).share_memory_()
+        # 每帧的红色标志
         self.red = torch.zeros(buffer, device="cuda", dtype=torch.bool).share_memory_()
+        # 每帧的位姿
         self.poses = torch.zeros(buffer, 7, device="cuda", dtype=torch.float).share_memory_()
+        # 每帧的视差
         self.disps = torch.ones(buffer, ht//8, wd//8, device="cuda", dtype=torch.float).share_memory_()
+        # 每帧的传感器视差
         self.disps_sens = torch.zeros(buffer, ht//8, wd//8, device="cuda", dtype=torch.float).share_memory_()
+        # 每帧的上采样视差
         self.disps_up = torch.zeros(buffer, ht, wd, device="cuda", dtype=torch.float).share_memory_()
+        # 每帧的内参
         self.intrinsics = torch.zeros(buffer, 4, device="cuda", dtype=torch.float).share_memory_()
 
         self.stereo = stereo
         c = 1 if not self.stereo else 2
 
-        ### feature attributes ###
+        ### 特征属性 ###
+        # 每帧的特征图
         self.fmaps = torch.zeros(buffer, c, 128, ht//8, wd//8, dtype=torch.half, device="cuda").share_memory_()
+        # 每帧的网络状态
         self.nets = torch.zeros(buffer, 128, ht//8, wd//8, dtype=torch.half, device="cuda").share_memory_()
+        # 每帧的输入
         self.inps = torch.zeros(buffer, 128, ht//8, wd//8, dtype=torch.half, device="cuda").share_memory_()
 
-        # initialize poses to identity transformation
+        # 初始化位姿为单位变换
         self.poses[:] = torch.as_tensor([0, 0, 0, 0, 0, 0, 1], dtype=torch.float, device="cuda")
-        
     def get_lock(self):
         return self.counter.get_lock()
 
